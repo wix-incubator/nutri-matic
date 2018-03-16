@@ -1,10 +1,10 @@
-package com.wixpress.random.internal.generators
+package com.wixpress.nutrimatic.internal.generators
 
-import com.wixpress.random.{Generator, GeneratorGenerator, TypeAndContext}
+import com.wixpress.nutrimatic.{Generator, GeneratorGenerator, TypeAndContext}
 
 import scala.reflect.runtime.universe._
 
-private[random] object Enums extends GeneratorGenerator[Enumeration#Value] {
+private[nutrimatic] object Enums extends GeneratorGenerator[Enumeration#Value] {
 
   override def isDefinedAt(x: TypeAndContext): Boolean = {
     x._1 <:< typeOf[Enumeration#Value]

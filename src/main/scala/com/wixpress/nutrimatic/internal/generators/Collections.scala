@@ -1,8 +1,8 @@
-package com.wixpress.random.internal.generators
+package com.wixpress.nutrimatic.internal.generators
 
-import com.wixpress.random.Generators
+import com.wixpress.nutrimatic.Generators
 
-private[random] object Collections {
+private[nutrimatic] object Collections {
   val generators = Seq(
     Generators.byErasure[List[_]]((t, context) => context.randomCollection(context.random(t.typeArgs.head)).toList),
     Generators.byErasure[Set[_]]((t, context) => context.randomCollection(context.random(t.typeArgs.head)).toSet),

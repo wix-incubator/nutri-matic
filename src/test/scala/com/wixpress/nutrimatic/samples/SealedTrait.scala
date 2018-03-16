@@ -1,4 +1,4 @@
-package com.wixpress.random.samples
+package com.wixpress.nutrimatic.samples
 
 sealed trait SealedTrait
 

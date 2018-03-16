@@ -1,8 +1,8 @@
-package com.wixpress.random.internal.generators
+package com.wixpress.nutrimatic.internal.generators
 
-import com.wixpress.random.{Generator, GeneratorGenerator, TypeAndContext}
+import com.wixpress.nutrimatic.{Generator, GeneratorGenerator, TypeAndContext}
 
-private[random] object SealedTraits extends GeneratorGenerator[Any] {
+private[nutrimatic] object SealedTraits extends GeneratorGenerator[Any] {
   override def isDefinedAt(tc: TypeAndContext): Boolean = {
     val (t, _) = tc
     val typeSymbol = t.typeSymbol

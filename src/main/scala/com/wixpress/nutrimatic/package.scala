@@ -1,10 +1,10 @@
 package com.wixpress
 
-import com.wixpress.random.internal.{AssignableErasureMatchingGenerator, InternalRandomBuilder, TypeEqualityMatchingGenerator}
+import com.wixpress.nutrimatic.internal.{AssignableErasureMatchingGenerator, InternalRandomBuilder, TypeEqualityMatchingGenerator}
 
 import scala.reflect.runtime.universe._
 
-package object random {
+package object nutrimatic {
   type TypeAndContext = (Type, Context)
   type Generator[T] = PartialFunction[TypeAndContext, T]
   type GeneratorGenerator[T] = PartialFunction[TypeAndContext, Generator[T]]
@@ -12,7 +12,7 @@ package object random {
   trait ByErasure[T] extends Generator[T]
 
   trait ByTypeEquality[T] extends Generator[T]
-  
+
   trait Random {
     def random[T](implicit tag: TypeTag[T]): T
   }
@@ -23,9 +23,9 @@ package object random {
 
     def random(t: Type): Any = random(t, t.typeSymbol.name.toString)
   }
-  
+
   trait BasicGenerators {
-    
+
     def randomStr: String
 
     def randomInt: Int
@@ -55,8 +55,8 @@ package object random {
     def withSeed(seed: Long): RandomBuilder
 
     def withMaxCacheSize(size: Int): RandomBuilder
-    
-    def build: random.Random
+
+    def build: nutrimatic.Random
   }
 
   case class FailedToGenerateRandomValue(message: String) extends Exception(message)
@@ -76,6 +76,7 @@ package object random {
 
     def builder: RandomBuilder = InternalRandomBuilder()
   }
+
 }
 
 

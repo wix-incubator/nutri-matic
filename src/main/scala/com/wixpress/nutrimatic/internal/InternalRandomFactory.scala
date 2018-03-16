@@ -1,15 +1,15 @@
-package com.wixpress.random.internal
+package com.wixpress.nutrimatic.internal
 
-import com.wixpress.random._
-import com.wixpress.random.internal.generators._
+import com.wixpress.nutrimatic._
+import com.wixpress.nutrimatic.internal.generators._
 
 import scala.reflect.runtime.universe._
 
-private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByTypeEquality[_]],
-                                            additionalByErasure: Seq[ByErasure[_]],
-                                            additionalCustom: Seq[Generator[_]],
-                                            val primitiveGenerators: BasicGenerators,
-                                            maxSizePerCache: Int) extends Random {
+private[nutrimatic] class InternalRandomFactory(additionalByTypeEquality: Seq[ByTypeEquality[_]],
+                                                additionalByErasure: Seq[ByErasure[_]],
+                                                additionalCustom: Seq[Generator[_]],
+                                                val primitiveGenerators: BasicGenerators,
+                                                maxSizePerCache: Int) extends Random {
 
   private val fail: Generator[Nothing] = {
     case (t, context: InternalContext) =>
@@ -67,7 +67,7 @@ private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByType
     value.asInstanceOf[T]
   }
 
-  private[random] def randomWithContext(t: Type, context: Context): Any = {
+  private[nutrimatic] def randomWithContext(t: Type, context: Context): Any = {
     generatorChain((t.dealias, context))
   }
 }
@@ -75,7 +75,7 @@ private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByType
 private case class InternalContext(factory: InternalRandomFactory, root: Type, fragments: Seq[String] = Seq.empty) extends Context {
 
   private val p = factory.primitiveGenerators
-  
+
   override def random(t: Type, addFragment: String): Any = {
     val deeper = copy(fragments = fragments :+ addFragment)
     factory.randomWithContext(t, deeper)

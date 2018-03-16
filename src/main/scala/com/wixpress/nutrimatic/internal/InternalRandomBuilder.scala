@@ -1,12 +1,12 @@
-package com.wixpress.random.internal
+package com.wixpress.nutrimatic.internal
 
-import com.wixpress.random._
+import com.wixpress.nutrimatic._
 
-private[random] case class InternalRandomBuilder(byTypeEquality: Seq[ByTypeEquality[_]] = Seq.empty,
-                                 byErasure: Seq[ByErasure[_]] = Seq.empty,
-                                 custom: Seq[Generator[_]] = Seq.empty,
-                                 primitiveGenerators: JavaRandomBasicGenerators = new JavaRandomBasicGenerators,
-                                 maxSizePerCache: Int = 10000) 
+private[nutrimatic] case class InternalRandomBuilder(byTypeEquality: Seq[ByTypeEquality[_]] = Seq.empty,
+                                                     byErasure: Seq[ByErasure[_]] = Seq.empty,
+                                                     custom: Seq[Generator[_]] = Seq.empty,
+                                                     primitiveGenerators: JavaRandomBasicGenerators = new JavaRandomBasicGenerators,
+                                                     maxSizePerCache: Int = 10000)
   extends RandomBuilder {
   override def withCustomGenerators(additionalGenerators: Generator[_]*): RandomBuilder = {
     val additionalByTypeEquality: Seq[ByTypeEquality[_]] = additionalGenerators.collect { case h: ByTypeEquality[_] => h }
@@ -33,7 +33,7 @@ private[random] case class InternalRandomBuilder(byTypeEquality: Seq[ByTypeEqual
 
   override def withSeed(seed: Long): RandomBuilder =
     copy(primitiveGenerators = primitiveGenerators.copy(initialSeed = seed))
-  
+
   override def withMaxCacheSize(size: Int): RandomBuilder =
     copy(maxSizePerCache = size)
 

@@ -1,8 +1,8 @@
-package com.wixpress.random.internal.generators
+package com.wixpress.nutrimatic.internal.generators
 
-import com.wixpress.random.Generators
+import com.wixpress.nutrimatic.Generators
 
-private[random] object Primitives {
+private[nutrimatic] object Primitives {
   val numbers = Seq(Generators.byExactType[Byte](r => r.randomInt.toByte),
     Generators.byExactType[Short](r => r.randomInt.toShort),
     Generators.byExactType[Char](r => r.randomInt.toChar),
@@ -10,7 +10,7 @@ private[random] object Primitives {
     Generators.byExactType[Long](r => r.randomLong),
     Generators.byExactType[Float](r => r.randomDouble.toFloat),
     Generators.byExactType[Double](r => r.randomDouble))
-  
+
   val booleans = Seq(Generators.byExactType[Boolean](r => r.randomBoolean))
 
   val strings = Seq(Generators.byExactType[String](r => r.randomStr))

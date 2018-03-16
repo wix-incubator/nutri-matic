@@ -1,7 +1,7 @@
-package com.wixpress.random
+package com.wixpress.nutrimatic
 
 import com.wixpress.common.specs2.JMock
-import com.wixpress.random.internal.CachingGenerator
+import com.wixpress.nutrimatic.internal.CachingGenerator
 import org.specs2.mutable.SpecificationWithJUnit
 import org.specs2.specification.Scope
 

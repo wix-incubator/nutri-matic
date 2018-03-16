@@ -1,22 +1,10 @@
-package com.wixpress.random.internal.generators
+package com.wixpress.nutrimatic.internal.generators
 
-import com.wixpress.random.{Generator, GeneratorGenerator, TypeAndContext}
+import com.wixpress.nutrimatic.{Generator, GeneratorGenerator, TypeAndContext}
 
 import scala.reflect.runtime.universe._
 
-private[random] object ClassesWithConstructors extends GeneratorGenerator[Any] {
-
-  private def getPrimaryConstructor(t: Type): Option[MethodSymbol] = {
-    val constructorDeclaration = t.decl(termNames.CONSTRUCTOR)
-    if (constructorDeclaration.isTerm) {
-      val alternatives = constructorDeclaration.asTerm.alternatives
-      alternatives
-        .collectFirst { case ctor: MethodSymbol if ctor.isPrimaryConstructor => ctor }
-        .orElse(Some(alternatives.head.asMethod))
-    } else {
-      None
-    }
-  }
+private[nutrimatic] object ClassesWithConstructors extends GeneratorGenerator[Any] {
 
   override def isDefinedAt(tc: TypeAndContext): Boolean = {
     val (t, _) = tc
@@ -38,6 +26,18 @@ private[random] object ClassesWithConstructors extends GeneratorGenerator[Any] {
           context.random(s.typeSignature, s.name.toString)
         })
         reflected.apply(args: _*)
+    }
+  }
+
+  private def getPrimaryConstructor(t: Type): Option[MethodSymbol] = {
+    val constructorDeclaration = t.decl(termNames.CONSTRUCTOR)
+    if (constructorDeclaration.isTerm) {
+      val alternatives = constructorDeclaration.asTerm.alternatives
+      alternatives
+        .collectFirst { case ctor: MethodSymbol if ctor.isPrimaryConstructor => ctor }
+        .orElse(Some(alternatives.head.asMethod))
+    } else {
+      None
     }
   }
 }

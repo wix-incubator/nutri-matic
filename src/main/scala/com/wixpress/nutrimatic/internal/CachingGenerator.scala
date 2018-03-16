@@ -1,21 +1,17 @@
-package com.wixpress.random.internal
+package com.wixpress.nutrimatic.internal
 
 import com.google.common.cache.{Cache, CacheBuilder}
-import com.wixpress.random
-import com.wixpress.random.{Generator, TypeAndContext}
+import com.wixpress.nutrimatic.{Generator, TypeAndContext}
 
-import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
-private[random] trait CachingGenerator[Key <: AnyRef, Value] extends Generator[Value] {
-  protected def hasCached(tc: TypeAndContext): Boolean
-
+private[nutrimatic] trait CachingGenerator[Key <: AnyRef, Value] extends Generator[Value] {
   def orElseCached(other: CachingGenerator[Key, Value]): CachingGenerator[Key, Value] = new CachingGenerator[Key, Value] {
-    override def hasCached(tc: (universe.Type, random.Context)): Boolean = CachingGenerator.this.hasCached(tc) || other.hasCached(tc)
+    override def hasCached(tc: TypeAndContext): Boolean = CachingGenerator.this.hasCached(tc) || other.hasCached(tc)
 
-    override def isDefinedAt(x: (universe.Type, random.Context)): Boolean = CachingGenerator.this.isDefinedAt(x) || other.isDefinedAt(x)
+    override def isDefinedAt(x: TypeAndContext): Boolean = CachingGenerator.this.isDefinedAt(x) || other.isDefinedAt(x)
 
-    override def apply(tc: (universe.Type, random.Context)): Value = {
+    override def apply(tc: TypeAndContext): Value = {
       if (CachingGenerator.this.hasCached(tc)) {
         CachingGenerator.this.apply(tc)
       } else if (other.hasCached(tc)) {
@@ -28,13 +24,15 @@ private[random] trait CachingGenerator[Key <: AnyRef, Value] extends Generator[V
 
   def onlyIfCached: Generator[Value] = new Generator[Value] {
 
-    override def isDefinedAt(x: (universe.Type, random.Context)): Boolean = CachingGenerator.this.hasCached(x)
+    override def isDefinedAt(x: TypeAndContext): Boolean = CachingGenerator.this.hasCached(x)
 
-    override def apply(tc: (universe.Type, random.Context)): Value = CachingGenerator.this.apply(tc)
+    override def apply(tc: TypeAndContext): Value = CachingGenerator.this.apply(tc)
   }
+
+  protected def hasCached(tc: TypeAndContext): Boolean
 }
 
-private[random] object CachingGenerator {
+private[nutrimatic] object CachingGenerator {
   def apply[T](generators: Seq[Generator[T]], keyFromType: Type => Type = identity, maxCacheSize: Int): CachingGenerator[Type, T] =
     new ByKeyLookupCachingGenerator[Type, T](
       generators = generators,
@@ -53,13 +51,13 @@ private class GeneratorCachingGenerator[Value](wrapppedGeneratorGenerators: Seq[
   extends AbstractCachingGenerator[Type, Value](identity, maxCacheSize) {
 
 
-  private def findGeneratorGenerator(tc: TypeAndContext): Option[Generator[Generator[Value]]] = {
-    wrapppedGeneratorGenerators.find(_.isDefinedAt(tc))
-  }
-
   override protected def canHandle(tc: TypeAndContext): Boolean = findGeneratorGenerator(tc).isDefined
 
   override protected def findGenerator(tc: TypeAndContext): Option[Generator[Value]] = findGeneratorGenerator(tc).map(_.apply(tc))
+
+  private def findGeneratorGenerator(tc: TypeAndContext): Option[Generator[Generator[Value]]] = {
+    wrapppedGeneratorGenerators.find(_.isDefinedAt(tc))
+  }
 
 }
 
@@ -80,22 +78,13 @@ private abstract class AbstractCachingGenerator[Key <: AnyRef, Value](keyFromTyp
     .recordStats()
     .build[Key, Generator[Value]]()
 
-
-  override def hasCached(tc: TypeAndContext): Boolean = {
-    getCached(tc).isDefined
-  }
-
   override def isDefinedAt(tc: TypeAndContext): Boolean = {
     hasCached(tc) || canHandle(tc)
   }
 
-  private def getCached(tc: TypeAndContext) = {
-    Option(cache.getIfPresent(keyFromType(tc._1)))
+  override def hasCached(tc: TypeAndContext): Boolean = {
+    getCached(tc).isDefined
   }
-
-  protected def canHandle(tc: TypeAndContext): Boolean
-
-  protected def findGenerator(tc: TypeAndContext): Option[Generator[Value]]
 
   override def apply(tc: TypeAndContext): Value = {
     val cached = getCached(tc)
@@ -108,4 +97,12 @@ private abstract class AbstractCachingGenerator[Key <: AnyRef, Value](keyFromTyp
       fn(tc)
     }
   }
+
+  private def getCached(tc: TypeAndContext) = {
+    Option(cache.getIfPresent(keyFromType(tc._1)))
+  }
+
+  protected def canHandle(tc: TypeAndContext): Boolean
+
+  protected def findGenerator(tc: TypeAndContext): Option[Generator[Value]]
 }

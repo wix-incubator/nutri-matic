@@ -1,10 +1,10 @@
-package com.wixpress.random.internal
+package com.wixpress.nutrimatic.internal
 
-import com.wixpress.random.{ByTypeEquality, Context, TypeAndContext}
+import com.wixpress.nutrimatic.{ByTypeEquality, Context, TypeAndContext}
 
 import scala.reflect.runtime.universe._
 
-private[random] abstract class TypeEqualityMatchingGenerator[T](t: TypeTag[T]) extends ByTypeEquality[T] {
+private[nutrimatic] abstract class TypeEqualityMatchingGenerator[T](t: TypeTag[T]) extends ByTypeEquality[T] {
   override def isDefinedAt(x: TypeAndContext): Boolean = {
     x._1 =:= t.tpe
   }

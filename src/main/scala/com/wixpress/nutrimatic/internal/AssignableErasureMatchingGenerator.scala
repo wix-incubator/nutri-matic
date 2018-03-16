@@ -1,10 +1,10 @@
-package com.wixpress.random.internal
+package com.wixpress.nutrimatic.internal
 
-import com.wixpress.random.{ByErasure, Context, TypeAndContext}
+import com.wixpress.nutrimatic.{ByErasure, Context, TypeAndContext}
 
 import scala.reflect.runtime.universe._
 
-private[random] abstract class AssignableErasureMatchingGenerator[T](t: WeakTypeTag[T]) extends ByErasure[T] {
+private[nutrimatic] abstract class AssignableErasureMatchingGenerator[T](t: WeakTypeTag[T]) extends ByErasure[T] {
   override def isDefinedAt(tc: TypeAndContext): Boolean = {
     tc._1.erasure <:< t.tpe.erasure
   }
@@ -16,6 +16,6 @@ private[random] abstract class AssignableErasureMatchingGenerator[T](t: WeakType
   protected def getValue(t: Type, context: Context): T
 }
 
-private[random] object AssignableErasureMatchingGenerator {
+private[nutrimatic] object AssignableErasureMatchingGenerator {
   def cacheKeyFromType(t: Type): Type = t.erasure
 }

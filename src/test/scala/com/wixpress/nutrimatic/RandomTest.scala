@@ -1,8 +1,8 @@
-package com.wixpress.random
+package com.wixpress.nutrimatic
 
-import com.wixpress.random.Random.builder
-import com.wixpress.random.Random.default.{random => defaultRandom}
-import com.wixpress.random.samples._
+import com.wixpress.nutrimatic.Random.builder
+import com.wixpress.nutrimatic.Random.default.{random => defaultRandom}
+import com.wixpress.nutrimatic.samples._
 import org.specs2.control.Debug
 import org.specs2.matcher.ValueCheck
 import org.specs2.mutable.SpecificationWithJUnit
@@ -194,7 +194,7 @@ class RandomTest extends SpecificationWithJUnit with Debug {
   "should fail to build regular traits and report path" in new Scope {
     defaultRandom[Seq[GenericFoo[RegularTrait]]] must throwA[FailedToGenerateRandomValue].like {
       case e: Throwable => e.getMessage must
-        contain("Seq[com.wixpress.random.samples.GenericFoo[com.wixpress.random.samples.RegularTrait]]") and
+        contain("Seq[com.wixpress.nutrimatic.samples.GenericFoo[com.wixpress.nutrimatic.samples.RegularTrait]]") and
         contain("Seq/GenericFoo/bar")
     }
   }

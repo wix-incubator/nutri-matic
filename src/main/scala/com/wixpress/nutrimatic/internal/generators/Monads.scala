@@ -1,8 +1,8 @@
-package com.wixpress.random.internal.generators
+package com.wixpress.nutrimatic.internal.generators
 
-import com.wixpress.random.Generators
+import com.wixpress.nutrimatic.Generators
 
-private[random] object Monads {
+private[nutrimatic] object Monads {
   val generators = Seq(
     Generators.byErasure[Option[_]]((t, r) =>
       if (r.randomBoolean) Some(r.random(t.typeArgs.head)) else None),
