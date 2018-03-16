@@ -46,11 +46,9 @@ private[nutrimatic] object CachingGenerator {
       maxCacheSize = maxCacheSize)
 }
 
-
 private class GeneratorCachingGenerator[Value](wrapppedGeneratorGenerators: Seq[Generator[Generator[Value]]], maxCacheSize: Int)
   extends AbstractCachingGenerator[Type, Value](identity, maxCacheSize) {
-
-
+  
   override protected def canHandle(tc: TypeAndContext): Boolean = findGeneratorGenerator(tc).isDefined
 
   override protected def findGenerator(tc: TypeAndContext): Option[Generator[Value]] = findGeneratorGenerator(tc).map(_.apply(tc))
@@ -60,7 +58,6 @@ private class GeneratorCachingGenerator[Value](wrapppedGeneratorGenerators: Seq[
   }
 
 }
-
 
 private class ByKeyLookupCachingGenerator[Key <: AnyRef, Value](generators: Seq[Generator[Value]], keyFromType: Type => Key, maxCacheSize: Int)
   extends AbstractCachingGenerator[Key, Value](keyFromType, maxCacheSize) {
