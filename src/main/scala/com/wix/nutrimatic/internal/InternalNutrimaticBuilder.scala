@@ -9,11 +9,9 @@ private[nutrimatic] case class InternalNutrimaticBuilder(byTypeEquality: Seq[ByT
                                                          maxSizePerCache: Int = 10000)
   extends NutrimaticBuilder {
   override def withCustomGenerators(additionalGenerators: Generator[_]*): NutrimaticBuilder = {
-    val additionalByTypeEquality: Seq[ByTypeEquality[_]] = additionalGenerators.collect { case h: ByTypeEquality[_] => h }
     val additionalByErasure = additionalGenerators.collect { case h: ByErasure[_] => h }
-    val additionCustom = additionalGenerators.toSet -- additionalByTypeEquality -- additionalByErasure
+    val additionCustom = additionalGenerators.toSet -- additionalByErasure
     copy(
-      byTypeEquality = byTypeEquality ++ additionalByTypeEquality,
       byErasure = byErasure ++ additionalByErasure,
       custom = custom ++ additionCustom
     )
@@ -37,5 +35,5 @@ private[nutrimatic] case class InternalNutrimaticBuilder(byTypeEquality: Seq[ByT
   override def withMaxCacheSize(size: Int): NutrimaticBuilder =
     copy(maxSizePerCache = size)
 
-  override def build: NutriMatic = new InternalNutriMatic(byTypeEquality, byErasure, custom, primitiveGenerators, maxSizePerCache)
+  override def build: NutriMatic = new InternalNutriMatic(byErasure, custom, primitiveGenerators, maxSizePerCache)
 }

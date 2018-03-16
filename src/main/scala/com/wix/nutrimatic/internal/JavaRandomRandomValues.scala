@@ -5,9 +5,9 @@ import org.apache.commons.lang3.RandomStringUtils
 
 import scala.util.Random
 
-private[nutrimatic] case class JavaRandomRandomValues(collectionMinSize: Int = 3,
+private[nutrimatic] case class JavaRandomRandomValues(collectionMinSize: Int = 0,
                                                       collectionMaxSize: Int = 3,
-                                                      stringMinSize: Int = 20,
+                                                      stringMinSize: Int = 1,
                                                       stringMaxSize: Int = 20,
                                                       onlyAscii: Boolean = true,
                                                       initialSeed: Long = Random.nextLong()) extends RandomValues {

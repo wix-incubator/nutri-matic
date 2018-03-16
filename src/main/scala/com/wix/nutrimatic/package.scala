@@ -2,6 +2,7 @@ package com.wix
 
 import com.wix.nutrimatic.internal.{AssignableErasureMatchingGenerator, InternalNutrimaticBuilder, TypeEqualityMatchingGenerator}
 
+import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
 package object nutrimatic {
@@ -64,7 +65,7 @@ package object nutrimatic {
   case class FailedToGenerateValue(message: String) extends Exception(message)
 
   object Generators {
-    def byExactType[T](valueFn: Context => T)(implicit t: TypeTag[T]): ByTypeEquality[T] = new TypeEqualityMatchingGenerator(t) {
+    def byExactType[T](valueFn: Context => T)(implicit t: TypeTag[T]): Generator[T] = new TypeEqualityMatchingGenerator(t) {
       override protected def getValue(context: Context): T = valueFn(context)
     }
 
@@ -73,10 +74,12 @@ package object nutrimatic {
     }
   }
 
-  object NutriMatic {
+  object NutriMatic extends NutriMatic {
     val default: NutriMatic = builder.build
 
     def builder: NutrimaticBuilder = InternalNutrimaticBuilder()
+
+    override def makeA[T](implicit tag: universe.TypeTag[T]): T = default.makeA
   }
 
 }

@@ -5,8 +5,7 @@ import com.wix.nutrimatic.internal.generators._
 
 import scala.reflect.runtime.universe._
 
-private[nutrimatic] class InternalNutriMatic(additionalByTypeEquality: Seq[ByTypeEquality[_]],
-                                             additionalByErasure: Seq[ByErasure[_]],
+private[nutrimatic] class InternalNutriMatic(additionalByErasure: Seq[ByErasure[_]],
                                              additionalCustom: Seq[Generator[_]],
                                              val randomValues: RandomValues,
                                              maxSizePerCache: Int) extends NutriMatic {
@@ -27,7 +26,7 @@ private[nutrimatic] class InternalNutriMatic(additionalByTypeEquality: Seq[ByTyp
 
   private val basicGenerators = CachingGenerator[Any](
     generators = Seq(failOnNothing)
-      ++ additionalByTypeEquality
+      ++ additionalCustom
       ++ Primitives.generators
       ++ BoxedJavaPrimitives.generators,
     maxCacheSize = maxSizePerCache)
@@ -48,16 +47,10 @@ private[nutrimatic] class InternalNutriMatic(additionalByTypeEquality: Seq[ByTyp
     ),
     maxCacheSize = maxSizePerCache)
 
-  private val generatorsWithCaching = {
-    val basicChain = basicGenerators orElseCached
-      erasureGenerators orElseCached
-      reflectiveGenerators
-    if (additionalCustom.isEmpty) {
-      basicChain
-    } else {
-      basicChain orElseCached CachingGenerator[Any](additionalCustom, maxCacheSize = maxSizePerCache)
-    }
-  }
+  private val generatorsWithCaching = 
+    basicGenerators orElseCached
+    erasureGenerators orElseCached
+    reflectiveGenerators
 
   private val generatorChain = generatorsWithCaching.onlyIfCached orElse generatorsWithCaching orElse fail
 

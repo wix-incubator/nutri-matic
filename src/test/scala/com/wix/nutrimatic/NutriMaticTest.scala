@@ -8,24 +8,20 @@ import org.specs2.matcher.ValueCheck
 import org.specs2.mutable.SpecificationWithJUnit
 import org.specs2.specification.Scope
 
-class NutrimaticTest extends SpecificationWithJUnit with Debug {
+class NutriMaticTest extends SpecificationWithJUnit with Debug {
 
   "nutrimatic strings" should {
     "be supported" in new Scope {
       defaultMakeA[String] must beAnInstanceOf[String]
     }
 
-    "have default length of 20" in new Scope {
-      defaultMakeA[String] must haveLength[String](20)
-    }
-
     "have only ascii letters and numbers by default" in new Scope {
       private val str: String = defaultMakeA[String]
-      str must beMatching("^[a-zA-Z0-9]{20}$")
+      str must beMatching("^[a-zA-Z0-9]{1,20}$")
     }
 
     "have only letters and numbers by default" in new Scope {
-      defaultMakeA[String] must beMatching("^[\\p{L},0-9]{20}$")
+      defaultMakeA[String] must beMatching("^[\\p{L},0-9]{1,20}$")
     }
 
     "support tweaking of string length" in new Scope {
@@ -192,7 +188,7 @@ class NutrimaticTest extends SpecificationWithJUnit with Debug {
   }
 
   "should fail to build regular traits and report path" in new Scope {
-    defaultMakeA[Seq[GenericFoo[RegularTrait]]] must throwA[FailedToGenerateValue].like {
+    NutriMatic.builder.withCollectionSizes(3, 3).build.makeA[Seq[GenericFoo[RegularTrait]]] must throwA[FailedToGenerateValue].like {
       case e: Throwable => e.getMessage must
         contain("Seq[com.wix.nutrimatic.samples.GenericFoo[com.wix.nutrimatic.samples.RegularTrait]]") and
         contain("Seq/GenericFoo/bar")
