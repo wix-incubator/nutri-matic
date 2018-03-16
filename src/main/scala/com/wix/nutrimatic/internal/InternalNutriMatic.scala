@@ -54,7 +54,7 @@ private[nutrimatic] class InternalNutriMatic(additionalByErasure: Seq[ByErasure[
 
   private val generatorChain = generatorsWithCaching.onlyIfCached orElse generatorsWithCaching orElse fail
 
-  override def makeA[T](implicit tag: TypeTag[T]): T = {
+  override def makeA[T](implicit tag: TypeTag[T]): T = synchronized { // we need a lock because of https://github.com/scala/bug/issues/10766
     val tpe = tag.tpe
     val value = InternalContext(this, tpe).makeComponent(tpe)
     value.asInstanceOf[T]
