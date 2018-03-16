@@ -2,20 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.wixpress.random</groupId>
-    <artifactId>carnival-mirror</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
-    <name>Carnival mirror</name>
-    <description>Reflection based random genrator</description>
-
-    <organization>
-        <name>People</name>
-    </organization>
+    <artifactId>nutrimatic</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>Nutri-Matic</name>
+    <description>Reflection based arbitrary value generator</description>
 
     <parent>
-        <groupId>com.wixpress.common</groupId>
-        <artifactId>wix-scala-parent-ng</artifactId>
-        <version>100.0.0-SNAPSHOT</version>
+        <groupId>com.wix</groupId>
+        <artifactId>wix-oss-scala-parent</artifactId>
+        <version>0.47.0</version>
         <relativePath/>
     </parent>
 
@@ -29,19 +24,22 @@
             </roles>
         </developer>
     </developers>
-    
+
     <dependencies>
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
+            <version>20.0</version>
         </dependency>
         <dependency>
-            <groupId>com.wixpress.hoopoe</groupId>
-            <artifactId>hoopoe-utest</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.7</version>
         </dependency>
         <dependency>
-            <groupId>com.wixpress.common</groupId>
-            <artifactId>wix-framework-scala-test-dependencies</artifactId>
+            <groupId>com.wix</groupId>
+            <artifactId>specs2-jmock_${scala.dependencies.version}</artifactId>
+            <version>1.2.0</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
