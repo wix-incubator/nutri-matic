@@ -21,7 +21,7 @@ private[random] object ClassesWithConstructors extends GeneratorGenerator[Any] {
   override def isDefinedAt(tc: TypeAndContext): Boolean = {
     val (t, _) = tc
     val typeSymbol = t.typeSymbol
-    typeSymbol.isClass && getPrimaryConstructor(t).isDefined
+    typeSymbol.isClass && !typeSymbol.isAbstract && getPrimaryConstructor(t).isDefined
   }
 
   override def apply(tc: TypeAndContext): Generator[Any] = {

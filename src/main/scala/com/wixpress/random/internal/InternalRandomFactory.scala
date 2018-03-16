@@ -43,8 +43,8 @@ private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByType
     generatorGenerators = Seq(
       Arrays,
       Enums,
-      ClassesWithConstructors,
-      SealedTraits
+      SealedTraits,
+      ClassesWithConstructors
     ),
     maxCacheSize = maxSizePerCache)
 

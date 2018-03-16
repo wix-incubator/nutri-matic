@@ -180,7 +180,15 @@ class RandomTest extends SpecificationWithJUnit with Debug {
   }
 
   "should support regular classes" in new Scope {
-    defaultRandom[RegularClass] must beAnInstanceOf[RegularClass]
+    val r: RegularClass = defaultRandom[RegularClass]
+    r must beAnInstanceOf[RegularClass]
+    r.bazbaz must beAnInstanceOf[String]
+  }
+
+  "should not generate abstract classes" in new Scope {
+    defaultRandom[AbstractClass] must throwA[FailedToGenerateRandomValue].like {
+      case e: Throwable => e.getMessage must contain("AbstractClass")
+    }
   }
 
   "should fail to build regular traits and report path" in new Scope {
