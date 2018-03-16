@@ -80,7 +80,7 @@ val nutriMatic = NutriMatic.builder
 nutriMatic.makeA[Option[Int]] must beSome(42)
 ```
 
-Finally, you provide your own custom generators. They are fired before any other generators:
+Finally, you can provide your own custom generators. They are fired before any other generators:
 ```scala 
 import com.wix.nutrimatic.{Generator, NutriMatic}
 
