@@ -1,17 +1,17 @@
 package com.wixpress.random.internal.generators
 
-import com.wixpress.random.{Generator, GeneratorGenerator, TypeAndRandom}
+import com.wixpress.random.{Generator, GeneratorGenerator, TypeAndContext}
 
 import scala.reflect.runtime.universe._
 
 private[random] object CaseClasses extends GeneratorGenerator[Any] {
-  override def isDefinedAt(tc: TypeAndRandom): Boolean = {
+  override def isDefinedAt(tc: TypeAndContext): Boolean = {
     val (t, _) = tc
     val typeSymbol = t.typeSymbol
     typeSymbol.isClass && typeSymbol.asClass.isCaseClass
   }
 
-  override def apply(tc: TypeAndRandom): Generator[Any] = {
+  override def apply(tc: TypeAndContext): Generator[Any] = {
     val (t, _) = tc
     val mirror = rootMirror
     val clazz = t.typeSymbol.asClass

@@ -20,18 +20,19 @@ private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByType
         throw FailedToGenerateRandomValue(s"$basicMessage Failed to generate an instance of type $t at ${context.fragments.mkString("/")}")
       }
     case (t, _) => throw FailedToGenerateRandomValue(s"Error generating an instance of $t.")
+    case arg => throw new RuntimeException(s"Unexpected argument $arg")
   }
 
   private val failOnNothing = Generators.byExactType[Nothing](context => fail((typeOf[Nothing], context)))
 
-  private val basicTypes = CachingGenerator[Any](
+  private val basicGenerators = CachingGenerator[Any](
     generators = Seq(failOnNothing)
       ++ additionalByTypeEquality
       ++ Primitives.generators
       ++ BoxedJavaPrimitives.generators,
     maxCacheSize = maxSizePerCache)
 
-  private val erasureTypes = CachingGenerator[Any](
+  private val erasureGenerators = CachingGenerator[Any](
     generators = additionalByErasure
       ++ Monads.generators
       ++ Collections.generators,
@@ -41,15 +42,15 @@ private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByType
   private val reflectiveGenerators = CachingGenerator.fromGeneratorsOfGenerators(
     generatorGenerators = Seq(
       Arrays,
-      RandomEnums,
+      Enums,
       CaseClasses,
       SealedTraits
     ),
     maxCacheSize = maxSizePerCache)
 
   private val generatorsWithCaching = {
-    val basicChain = basicTypes orElseCached
-      erasureTypes orElseCached
+    val basicChain = basicGenerators orElseCached
+      erasureGenerators orElseCached
       reflectiveGenerators
     if (additionalCustom.isEmpty) {
       basicChain
@@ -59,7 +60,6 @@ private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByType
   }
 
   private val generatorChain = generatorsWithCaching.onlyIfCached orElse generatorsWithCaching orElse fail
-
 
   override def random[T](implicit tag: TypeTag[T]): T = {
     val tpe = tag.tpe
@@ -74,12 +74,26 @@ private[random] class InternalRandomFactory(additionalByTypeEquality: Seq[ByType
 
 private case class InternalContext(factory: InternalRandomFactory, root: Type, fragments: Seq[String] = Seq.empty) extends Context {
 
-  override val basic: BasicGenerators = factory.primitiveGenerators
-
+  private val p = factory.primitiveGenerators
+  
   override def random(t: Type, addFragment: String): Any = {
     val deeper = copy(fragments = fragments :+ addFragment)
     factory.randomWithContext(t, deeper)
   }
+
+  override def randomStr: String = p.randomStr
+
+  override def randomInt: Int = p.randomInt
+
+  override def randomInt(from: Int, to: Int): Int = p.randomInt(from, to)
+
+  override def randomLong: Long = p.randomLong
+
+  override def randomDouble: Double = p.randomDouble
+
+  override def randomBoolean: Boolean = p.randomBoolean
+
+  override def randomCollection[T](generator: => T): Seq[T] = p.randomCollection(generator)
 }
 
 

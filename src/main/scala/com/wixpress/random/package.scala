@@ -1,32 +1,31 @@
 package com.wixpress
 
-import com.wixpress.random.internal.InternalRandomBuilder
-import com.wixpress.random.internal.generators.{TypeEqualityMatchingGenerator, AssignableErasureMatchingGenerator}
+import com.wixpress.random.internal.{AssignableErasureMatchingGenerator, InternalRandomBuilder, TypeEqualityMatchingGenerator}
 
 import scala.reflect.runtime.universe._
 
 package object random {
-  type TypeAndRandom = (Type, Context)
-  type Generator[T] = PartialFunction[TypeAndRandom, T]
-  type GeneratorGenerator[T] = PartialFunction[TypeAndRandom, Generator[T]]
+  type TypeAndContext = (Type, Context)
+  type Generator[T] = PartialFunction[TypeAndContext, T]
+  type GeneratorGenerator[T] = PartialFunction[TypeAndContext, Generator[T]]
 
   trait ByErasure[T] extends Generator[T]
 
   trait ByTypeEquality[T] extends Generator[T]
+  
+  trait Random {
+    def random[T](implicit tag: TypeTag[T]): T
+  }
 
-  trait Context {
-    val basic: BasicGenerators
+  trait Context extends BasicGenerators {
 
     def random(t: Type, addFragment: String): Any
 
     def random(t: Type): Any = random(t, t.typeSymbol.name.toString)
   }
-
-  trait Random {
-    def random[T](implicit tag: TypeTag[T]): T
-  }
-
+  
   trait BasicGenerators {
+    
     def randomStr: String
 
     def randomInt: Int
@@ -77,7 +76,6 @@ package object random {
 
     def builder: RandomBuilder = InternalRandomBuilder()
   }
-
 }
 
 

@@ -2,13 +2,13 @@ package com.wixpress.random.internal
 
 import com.google.common.cache.{Cache, CacheBuilder}
 import com.wixpress.random
-import com.wixpress.random.{Generator, TypeAndRandom}
+import com.wixpress.random.{Generator, TypeAndContext}
 
 import scala.reflect.runtime.universe
 import scala.reflect.runtime.universe._
 
 private[random] trait CachingGenerator[Key <: AnyRef, Value] extends Generator[Value] {
-  protected def hasCached(tc: TypeAndRandom): Boolean
+  protected def hasCached(tc: TypeAndContext): Boolean
 
   def orElseCached(other: CachingGenerator[Key, Value]): CachingGenerator[Key, Value] = new CachingGenerator[Key, Value] {
     override def hasCached(tc: (universe.Type, random.Context)): Boolean = CachingGenerator.this.hasCached(tc) || other.hasCached(tc)
@@ -30,7 +30,7 @@ private[random] trait CachingGenerator[Key <: AnyRef, Value] extends Generator[V
 
     override def isDefinedAt(x: (universe.Type, random.Context)): Boolean = CachingGenerator.this.hasCached(x)
 
-    override def apply(v1: (universe.Type, random.Context)): Value = CachingGenerator.this.apply(v1)
+    override def apply(tc: (universe.Type, random.Context)): Value = CachingGenerator.this.apply(tc)
   }
 }
 
@@ -53,13 +53,13 @@ private class GeneratorCachingGenerator[Value](wrapppedGeneratorGenerators: Seq[
   extends AbstractCachingGenerator[Type, Value](identity, maxCacheSize) {
 
 
-  private def findGeneratorGenerator(tc: TypeAndRandom): Option[Generator[Generator[Value]]] = {
+  private def findGeneratorGenerator(tc: TypeAndContext): Option[Generator[Generator[Value]]] = {
     wrapppedGeneratorGenerators.find(_.isDefinedAt(tc))
   }
 
-  override protected def canHandle(tc: TypeAndRandom): Boolean = findGeneratorGenerator(tc).isDefined
+  override protected def canHandle(tc: TypeAndContext): Boolean = findGeneratorGenerator(tc).isDefined
 
-  override protected def findGenerator(tc: TypeAndRandom): Option[Generator[Value]] = findGeneratorGenerator(tc).map(_.apply(tc))
+  override protected def findGenerator(tc: TypeAndContext): Option[Generator[Value]] = findGeneratorGenerator(tc).map(_.apply(tc))
 
 }
 
@@ -67,9 +67,9 @@ private class GeneratorCachingGenerator[Value](wrapppedGeneratorGenerators: Seq[
 private class ByKeyLookupCachingGenerator[Key <: AnyRef, Value](generators: Seq[Generator[Value]], keyFromType: Type => Key, maxCacheSize: Int)
   extends AbstractCachingGenerator[Key, Value](keyFromType, maxCacheSize) {
 
-  override protected def canHandle(tc: TypeAndRandom): Boolean = findGenerator(tc).isDefined
+  override protected def canHandle(tc: TypeAndContext): Boolean = findGenerator(tc).isDefined
 
-  override protected def findGenerator(tc: TypeAndRandom): Option[Generator[Value]] = generators.find(_.isDefinedAt(tc))
+  override protected def findGenerator(tc: TypeAndContext): Option[Generator[Value]] = generators.find(_.isDefinedAt(tc))
 
 }
 
@@ -81,28 +81,29 @@ private abstract class AbstractCachingGenerator[Key <: AnyRef, Value](keyFromTyp
     .build[Key, Generator[Value]]()
 
 
-  override def hasCached(tc: TypeAndRandom): Boolean = {
+  override def hasCached(tc: TypeAndContext): Boolean = {
     getCached(tc).isDefined
   }
 
-  override def isDefinedAt(tc: TypeAndRandom): Boolean = {
+  override def isDefinedAt(tc: TypeAndContext): Boolean = {
     hasCached(tc) || canHandle(tc)
   }
 
-  private def getCached(tc: TypeAndRandom) = {
+  private def getCached(tc: TypeAndContext) = {
     Option(cache.getIfPresent(keyFromType(tc._1)))
   }
 
-  protected def canHandle(tc: TypeAndRandom): Boolean
+  protected def canHandle(tc: TypeAndContext): Boolean
 
-  protected def findGenerator(tc: TypeAndRandom): Option[Generator[Value]]
+  protected def findGenerator(tc: TypeAndContext): Option[Generator[Value]]
 
-  override def apply(tc: TypeAndRandom): Value = {
+  override def apply(tc: TypeAndContext): Value = {
     val cached = getCached(tc)
     if (cached.isDefined) {
       cached.get(tc)
     } else {
-      val fn: Generator[Value] = findGenerator(tc).getOrElse(throw new MatchError(tc._1))
+      val fn: Generator[Value] = findGenerator(tc)
+        .getOrElse(throw new RuntimeException("Apply called on unsupported type, this should not happen."))
       cache.put(keyFromType(tc._1), fn)
       fn(tc)
     }

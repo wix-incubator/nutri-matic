@@ -2,7 +2,7 @@ package com.wixpress.random.internal
 
 import com.wixpress.random._
 
-case class InternalRandomBuilder(byTypeEquality: Seq[ByTypeEquality[_]] = Seq.empty,
+private[random] case class InternalRandomBuilder(byTypeEquality: Seq[ByTypeEquality[_]] = Seq.empty,
                                  byErasure: Seq[ByErasure[_]] = Seq.empty,
                                  custom: Seq[Generator[_]] = Seq.empty,
                                  primitiveGenerators: JavaRandomBasicGenerators = new JavaRandomBasicGenerators,

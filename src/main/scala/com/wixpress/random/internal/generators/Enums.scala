@@ -1,16 +1,16 @@
 package com.wixpress.random.internal.generators
 
-import com.wixpress.random.{Generator, GeneratorGenerator, TypeAndRandom}
+import com.wixpress.random.{Generator, GeneratorGenerator, TypeAndContext}
 
 import scala.reflect.runtime.universe._
 
-private[random] object RandomEnums extends GeneratorGenerator[Enumeration#Value] {
+private[random] object Enums extends GeneratorGenerator[Enumeration#Value] {
 
-  override def isDefinedAt(x: TypeAndRandom): Boolean = {
+  override def isDefinedAt(x: TypeAndContext): Boolean = {
     x._1 <:< typeOf[Enumeration#Value]
   }
 
-  override def apply(x: TypeAndRandom): Generator[Enumeration#Value] = {
+  override def apply(x: TypeAndContext): Generator[Enumeration#Value] = {
     val (valueType, _) = x
     val TypeRef(ownerType, _, _) = valueType
     val fields = valueSymbols(ownerType, valueType).toSeq
@@ -20,7 +20,7 @@ private[random] object RandomEnums extends GeneratorGenerator[Enumeration#Value]
     val lastIndex = enumValues.size
 
     {
-      case (_, r) => enumValues(r.basic.randomInt(0, lastIndex)).asInstanceOf[Enumeration#Value]
+      case (_, r) => enumValues(r.randomInt(0, lastIndex)).asInstanceOf[Enumeration#Value]
     }
   }
 
