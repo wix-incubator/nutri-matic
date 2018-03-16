@@ -1,16 +1,16 @@
 package com.wixpress.nutrimatic.internal
 
-import com.wixpress.nutrimatic.BasicGenerators
+import com.wixpress.nutrimatic.RandomValues
 import org.apache.commons.lang3.RandomStringUtils
 
 import scala.util.Random
 
-private[nutrimatic] case class JavaRandomBasicGenerators(collectionMinSize: Int = 3,
-                                                         collectionMaxSize: Int = 3,
-                                                         stringMinSize: Int = 20,
-                                                         stringMaxSize: Int = 20,
-                                                         onlyAscii: Boolean = true,
-                                                         initialSeed: Long = Random.nextLong()) extends BasicGenerators {
+private[nutrimatic] case class JavaRandomRandomValues(collectionMinSize: Int = 3,
+                                                      collectionMaxSize: Int = 3,
+                                                      stringMinSize: Int = 20,
+                                                      stringMaxSize: Int = 20,
+                                                      onlyAscii: Boolean = true,
+                                                      initialSeed: Long = Random.nextLong()) extends RandomValues {
   private val javaRandom = new java.util.Random(initialSeed)
 
   override def randomStr: String = {

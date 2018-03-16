@@ -23,7 +23,7 @@ private[nutrimatic] object ClassesWithConstructors extends GeneratorGenerator[An
     {
       case (_, context) =>
         val args = ctorParams.map(s => {
-          context.random(s.typeSignature, s.name.toString)
+          context.makeComponent(s.typeSignature, s.name.toString)
         })
         reflected.apply(args: _*)
     }

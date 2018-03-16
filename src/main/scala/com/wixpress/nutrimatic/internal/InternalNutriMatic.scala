@@ -5,21 +5,21 @@ import com.wixpress.nutrimatic.internal.generators._
 
 import scala.reflect.runtime.universe._
 
-private[nutrimatic] class InternalRandomFactory(additionalByTypeEquality: Seq[ByTypeEquality[_]],
-                                                additionalByErasure: Seq[ByErasure[_]],
-                                                additionalCustom: Seq[Generator[_]],
-                                                val primitiveGenerators: BasicGenerators,
-                                                maxSizePerCache: Int) extends Random {
+private[nutrimatic] class InternalNutriMatic(additionalByTypeEquality: Seq[ByTypeEquality[_]],
+                                             additionalByErasure: Seq[ByErasure[_]],
+                                             additionalCustom: Seq[Generator[_]],
+                                             val randomValues: RandomValues,
+                                             maxSizePerCache: Int) extends NutriMatic {
 
   private val fail: Generator[Nothing] = {
     case (t, context: InternalContext) =>
       val basicMessage = s"Error generating an instance of ${context.root}."
       if (context.root == t) {
-        throw FailedToGenerateRandomValue(basicMessage)
+        throw FailedToGenerateValue(basicMessage)
       } else {
-        throw FailedToGenerateRandomValue(s"$basicMessage Failed to generate an instance of type $t at ${context.fragments.mkString("/")}")
+        throw FailedToGenerateValue(s"$basicMessage Failed to generate an instance of type $t at ${context.fragments.mkString("/")}")
       }
-    case (t, _) => throw FailedToGenerateRandomValue(s"Error generating an instance of $t.")
+    case (t, _) => throw FailedToGenerateValue(s"Error generating an instance of $t.")
     case arg => throw new RuntimeException(s"Unexpected argument $arg")
   }
 
@@ -61,9 +61,9 @@ private[nutrimatic] class InternalRandomFactory(additionalByTypeEquality: Seq[By
 
   private val generatorChain = generatorsWithCaching.onlyIfCached orElse generatorsWithCaching orElse fail
 
-  override def random[T](implicit tag: TypeTag[T]): T = {
+  override def makeA[T](implicit tag: TypeTag[T]): T = {
     val tpe = tag.tpe
-    val value = InternalContext(this, tpe).random(tpe)
+    val value = InternalContext(this, tpe).makeComponent(tpe)
     value.asInstanceOf[T]
   }
 
@@ -72,11 +72,11 @@ private[nutrimatic] class InternalRandomFactory(additionalByTypeEquality: Seq[By
   }
 }
 
-private case class InternalContext(factory: InternalRandomFactory, root: Type, fragments: Seq[String] = Seq.empty) extends Context {
+private case class InternalContext(factory: InternalNutriMatic, root: Type, fragments: Seq[String] = Seq.empty) extends Context {
 
-  private val p = factory.primitiveGenerators
+  private val p = factory.randomValues
 
-  override def random(t: Type, addFragment: String): Any = {
+  override def makeComponent(t: Type, addFragment: String): Any = {
     val deeper = copy(fragments = fragments :+ addFragment)
     factory.randomWithContext(t, deeper)
   }

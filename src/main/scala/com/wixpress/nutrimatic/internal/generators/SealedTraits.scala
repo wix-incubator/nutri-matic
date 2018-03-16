@@ -17,7 +17,7 @@ private[nutrimatic] object SealedTraits extends GeneratorGenerator[Any] {
     {
       case (_, context) =>
         val subClass = subClasses(context.randomInt(0, subClasses.size))
-        context.random(subClass.asType.toType, s"subtype of $t")
+        context.makeComponent(subClass.asType.toType, s"subtype of $t")
     }
   }
 }

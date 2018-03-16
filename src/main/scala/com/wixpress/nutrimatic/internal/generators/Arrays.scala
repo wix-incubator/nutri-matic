@@ -1,5 +1,7 @@
 package com.wixpress.nutrimatic.internal.generators
 
+import java.lang.reflect.Array.newInstance
+
 import com.wixpress.nutrimatic.{Generator, GeneratorGenerator, TypeAndContext}
 
 import scala.reflect.runtime.universe._
@@ -15,8 +17,8 @@ object Arrays extends GeneratorGenerator[Any] {
 
     {
       case (_, context) => {
-        val objectArray = context.randomCollection(context.random(t.typeArgs.head)).toArray
-        val specificArray = java.lang.reflect.Array.newInstance(componentType, objectArray.length)
+        val objectArray = context.randomCollection(context.makeComponent(t.typeArgs.head)).toArray
+        val specificArray = newInstance(componentType, objectArray.length)
         Array.copy(objectArray, 0, specificArray, 0, objectArray.length)
         specificArray
       }

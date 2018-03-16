@@ -1,6 +1,6 @@
 package com.wixpress
 
-import com.wixpress.nutrimatic.internal.{AssignableErasureMatchingGenerator, InternalRandomBuilder, TypeEqualityMatchingGenerator}
+import com.wixpress.nutrimatic.internal.{AssignableErasureMatchingGenerator, InternalNutrimaticBuilder, TypeEqualityMatchingGenerator}
 
 import scala.reflect.runtime.universe._
 
@@ -13,18 +13,20 @@ package object nutrimatic {
 
   trait ByTypeEquality[T] extends Generator[T]
 
-  trait Random {
-    def random[T](implicit tag: TypeTag[T]): T
+  trait NutriMatic {
+    def makeA[T](implicit tag: TypeTag[T]): T
+    
+    def makeAn[T](implicit tag: TypeTag[T]) = makeA
   }
 
-  trait Context extends BasicGenerators {
+  trait Context extends RandomValues {
 
-    def random(t: Type, addFragment: String): Any
+    def makeComponent(t: Type, addFragment: String): Any
 
-    def random(t: Type): Any = random(t, t.typeSymbol.name.toString)
+    def makeComponent(t: Type): Any = makeComponent(t, t.typeSymbol.name.toString)
   }
 
-  trait BasicGenerators {
+  trait RandomValues {
 
     def randomStr: String
 
@@ -41,25 +43,25 @@ package object nutrimatic {
     def randomCollection[T](generator: => T): Seq[T]
   }
 
-  trait RandomBuilder {
-    def withCustomGenerators(generators: Generator[_]*): RandomBuilder
+  trait NutrimaticBuilder {
+    def withCustomGenerators(generators: Generator[_]*): NutrimaticBuilder
 
-    def withCollectionSizes(from: Int, to: Int): RandomBuilder
+    def withCollectionSizes(from: Int, to: Int): NutrimaticBuilder
 
-    def withStringLengths(from: Int, to: Int): RandomBuilder
+    def withStringLengths(from: Int, to: Int): NutrimaticBuilder
 
-    def withOnlyAsciiCharacters: RandomBuilder
+    def withOnlyAsciiCharacters: NutrimaticBuilder
 
-    def withAllCharacters: RandomBuilder
+    def withAllCharacters: NutrimaticBuilder
 
-    def withSeed(seed: Long): RandomBuilder
+    def withSeed(seed: Long): NutrimaticBuilder
 
-    def withMaxCacheSize(size: Int): RandomBuilder
+    def withMaxCacheSize(size: Int): NutrimaticBuilder
 
-    def build: nutrimatic.Random
+    def build: nutrimatic.NutriMatic
   }
 
-  case class FailedToGenerateRandomValue(message: String) extends Exception(message)
+  case class FailedToGenerateValue(message: String) extends Exception(message)
 
   object Generators {
     def byExactType[T](valueFn: Context => T)(implicit t: TypeTag[T]): ByTypeEquality[T] = new TypeEqualityMatchingGenerator(t) {
@@ -71,10 +73,10 @@ package object nutrimatic {
     }
   }
 
-  object Random {
-    val default: Random = builder.build
+  object NutriMatic {
+    val default: NutriMatic = builder.build
 
-    def builder: RandomBuilder = InternalRandomBuilder()
+    def builder: NutrimaticBuilder = InternalNutrimaticBuilder()
   }
 
 }
