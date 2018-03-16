@@ -179,6 +179,10 @@ class RandomTest extends SpecificationWithJUnit with Debug {
     r.baz must beAnInstanceOf[String]
   }
 
+  "should support regular classes" in new Scope {
+    defaultRandom[RegularClass] must beAnInstanceOf[RegularClass]
+  }
+
   "should fail to build regular traits and report path" in new Scope {
     defaultRandom[Seq[GenericFoo[RegularTrait]]] must throwA[FailedToGenerateRandomValue].like {
       case e: Throwable => e.getMessage must
