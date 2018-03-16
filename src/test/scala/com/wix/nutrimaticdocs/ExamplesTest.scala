@@ -1,5 +1,6 @@
 package com.wix.nutrimaticdocs
 
+import com.wix.nutrimatic.Context
 import org.specs2.matcher.Matcher
 import org.specs2.mutable.SpecificationWithJUnit
 import org.specs2.specification.Scope
@@ -15,7 +16,7 @@ class ExamplesTest extends SpecificationWithJUnit {
   "Configured instance example" in valid {
     import com.wix.nutrimatic.{Generators, NutriMatic}
 
-    val getRandomNumber = Generators.byExactType[Int]((_) => 4) // https://xkcd.com/221/
+    val getRandomNumber = Generators.byExactType[Int] { _ => 4 } // https://xkcd.com/221/
 
     val nutriMatic = NutriMatic.builder // the arguments here are the default values
       .withAllCharacters // created strings will include any characters
@@ -28,6 +29,52 @@ class ExamplesTest extends SpecificationWithJUnit {
       .build
 
     nutriMatic.makeA[Int] must_== 4
+  }
+
+  "Extension exact type" in valid {
+    import com.wix.nutrimatic.{Generators, NutriMatic}
+
+    val getRandomNumber = Generators.byExactType[Int] {
+      context: Context => context.randomInt(0, 5) // context gives access to functions to make other values
+    }
+
+    val nutriMatic = NutriMatic.builder
+      .withCustomGenerators(getRandomNumber)
+      .build
+
+    nutriMatic.makeA[Int] must beBetween(0, 5)
+  }
+
+  "Extension erasure" in valid {
+    import com.wix.nutrimatic.{Generators, NutriMatic}
+
+    val makeSureWeKnow = Generators.byErasure[Option[_]] {
+      case (tpe, context) => Some(context.makeComponent(tpe.typeArgs.head))
+    }
+
+    val theAnswerToLifeTheUniverseAndEverything = Generators.byExactType[Int] { _ => 42 }
+
+    val nutriMatic = NutriMatic.builder
+      .withCustomGenerators(theAnswerToLifeTheUniverseAndEverything, makeSureWeKnow)
+      .build
+
+    nutriMatic.makeA[Option[Int]] must beSome(42)
+  }
+  
+  "Extension custom" in valid {
+    import com.wix.nutrimatic.{Generator, NutriMatic}
+
+    val typesStartingWithSAreAlwaysNull: Generator[Any] = {
+      case (tpe, context) if tpe.toString.startsWith("S") => null
+    }
+    
+    val nutriMatic = NutriMatic.builder
+      .withCustomGenerators(typesStartingWithSAreAlwaysNull)
+      .build
+
+    nutriMatic.makeA[String] must beNull
+    nutriMatic.makeA[Seq[Int]] must beNull
+    nutriMatic.makeA[Option[Int]] must not(beNull)
   }
 
 
