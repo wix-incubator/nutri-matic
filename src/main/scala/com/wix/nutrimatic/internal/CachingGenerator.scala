@@ -9,7 +9,7 @@ private[nutrimatic] trait CachingGenerator[Key <: AnyRef, Value] extends Generat
   def orElseCached(other: CachingGenerator[Key, Value]): CachingGenerator[Key, Value] = new CachingGenerator[Key, Value] {
     override def hasCached(tc: TypeAndContext): Boolean = CachingGenerator.this.hasCached(tc) || other.hasCached(tc)
 
-    override def isDefinedAt(x: TypeAndContext): Boolean = CachingGenerator.this.isDefinedAt(x) || other.isDefinedAt(x)
+    override def isDefinedAt(x: TypeAndContext): Boolean = hasCached(x) || CachingGenerator.this.isDefinedAt(x) || other.isDefinedAt(x)
 
     override def apply(tc: TypeAndContext): Value = {
       if (CachingGenerator.this.hasCached(tc)) {
