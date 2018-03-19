@@ -10,7 +10,7 @@ import org.specs2.specification.Scope
 
 class NutriMaticTest extends SpecificationWithJUnit with Debug {
 
-  "nutrimatic strings" should {
+  "nutri-matic strings" should {
     "be supported" in new Scope {
       defaultMakeA[String] must beAnInstanceOf[String]
     }
@@ -35,7 +35,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
-  "nutrimatic primitives" should {
+  "nutri-matic primitives" should {
     "be supported" in new Scope {
       defaultMakeA[Byte] must beBetween(Byte.MinValue, Byte.MaxValue)
       defaultMakeA[Short] must beBetween(Short.MinValue, Short.MaxValue)
@@ -52,7 +52,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
-  "nutrimatic boxed java primitives" should {
+  "nutri-matic boxed java primitives" should {
     "be supported" in new Scope {
       defaultMakeA[java.lang.Byte] must beAnInstanceOf[java.lang.Byte]
       defaultMakeA[java.lang.Short] must beAnInstanceOf[java.lang.Short]
@@ -69,7 +69,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
-  "nutrimatic enums" should {
+  "nutri-matic enums" should {
     "be supported and multiple enums not be confused" in new Scope {
       defaultMakeA[Enum1.Value] must beOneOf(Enum1.values.toSeq: _*)
       defaultMakeA[Enum2.Value] must beOneOf(Enum2.values.toSeq: _*)
@@ -80,7 +80,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
-  "nutrimatic case classes" should {
+  "nutri-matic case classes" should {
     "beSupported" in new Scope {
       val Foo(foo, bar) = defaultMakeA[Foo]
       foo must beBetween(Int.MinValue, Int.MaxValue)
@@ -92,7 +92,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
-  "nutrimatic monads" should {
+  "nutri-matic monads" should {
     "support scala.Option and return both None and Some" in new Scope {
       val expectedSome: ValueCheck[Option[String]] = beSome(beAnInstanceOf[String])
       val expectedNone: ValueCheck[Option[String]] = beNone
@@ -108,7 +108,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
-  "nutrimatic sealed traits" should {
+  "nutri-matic sealed traits" should {
     "should support sealed traits" in new Scope {
       defaultMakeA[SealedTrait] must beLike {
         case Case1(e) if Enum1.values.contains(e) => ok
@@ -121,7 +121,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
-  "nutrimatic collections" should {
+  "nutri-matic collections" should {
     "support Seq with default size" in new Scope {
       defaultMakeA[Seq[SealedTrait]] must beAnInstanceOf[Seq[SealedTrait]] and
         contain(beAnInstanceOf[SealedTrait]).forall and
