@@ -6,15 +6,32 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>Nutri-Matic</name>
     <description>Reflection based arbitrary value generator</description>
+    <url>https://github.com/wix/nutri-matic</url>
 
+    <scm>
+        <url>https://github.com/wix/nutri-matic</url>
+        <connection>scm:git:git@github.com:wix/nutri-matic.git</connection>
+    </scm>
+    <organization>
+        <name>com.wix</name>
+        <url>https://github.com/wix</url>
+    </organization>
+    
+    <licenses>
+        <license>
+            <name>Apache-2.0</name>
+            <url>http://www.opensource.org/licenses/Apache-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+    
     <parent>
         <groupId>com.wix</groupId>
         <artifactId>wix-oss-scala-parent</artifactId>
         <version>0.47.0</version>
         <relativePath/>
     </parent>
-
-
+    
     <developers>
         <developer>
             <name>Laurynas Lubys</name>
