@@ -6,15 +6,15 @@
     <version>0.0.1-SNAPSHOT</version>
     <name>Nutri-Matic</name>
     <description>Reflection based arbitrary value generator</description>
-    <url>https://github.com/wix/nutri-matic</url>
+    <url>https://github.com/wix-incubator/nutri-matic</url>
 
     <scm>
-        <url>https://github.com/wix/nutri-matic</url>
-        <connection>scm:git:git@github.com:wix/nutri-matic.git</connection>
+        <url>https://github.com/wix-incubator/nutri-matic</url>
+        <connection>scm:git:git@github.com:wix-incubator/nutri-matic.git</connection>
     </scm>
     <organization>
         <name>com.wix</name>
-        <url>https://github.com/wix</url>
+        <url>https://github.com/wix-incubator</url>
     </organization>
     
     <licenses>
