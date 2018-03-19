@@ -46,9 +46,7 @@ nutriMatic.makeA[Option[String]]
 
 The main concept behind making values in generators, which are just partial functions.
 
-The most basic are generators that match an exact type. Say you wanted to make sure that the ints you get are really random. You find a good code snippet and get to work:
-
-![Random](https://imgs.xkcd.com/comics/random_number.png) 
+The most basic are generators that match an exact type. Say you wanted to make sure that the ints you get are really random. You find a good [code snippet](https://xkcd.com/221/) and get to work: 
 ```scala
 import com.wix.nutrimatic.{Generators, NutriMatic}
 
