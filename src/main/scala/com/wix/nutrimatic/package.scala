@@ -23,12 +23,12 @@ import scala.reflect.runtime.universe._
 
 package object nutrimatic {
   type TypeAndContext = (Type, Context)
-  type Generator[T] = PartialFunction[TypeAndContext, T]
-  type GeneratorGenerator[T] = PartialFunction[TypeAndContext, Generator[T]]
+  type Generator[+T] = PartialFunction[TypeAndContext, T]
+  type GeneratorGenerator[+T] = PartialFunction[TypeAndContext, Generator[T]]
 
-  trait ByErasure[T] extends Generator[T]
+  trait ByErasure[+T] extends Generator[T]
 
-  trait ByTypeEquality[T] extends Generator[T]
+  trait ByTypeEquality[+T] extends Generator[T]
 
   trait NutriMatic {
     def makeA[T](implicit tag: TypeTag[T]): T
@@ -61,7 +61,7 @@ package object nutrimatic {
   }
 
   trait NutrimaticBuilder {
-    def withCustomGenerators(generators: Generator[_]*): NutrimaticBuilder
+    def withCustomGenerators[T <: Any](generators: Generator[T]*): NutrimaticBuilder
 
     def withCollectionSizes(from: Int, to: Int): NutrimaticBuilder
 

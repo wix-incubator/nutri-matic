@@ -24,9 +24,9 @@ private[nutrimatic] case class InternalNutrimaticBuilder(byTypeEquality: Seq[ByT
                                                          primitiveGenerators: JavaRandomRandomValues = new JavaRandomRandomValues,
                                                          maxSizePerCache: Int = 10000)
   extends NutrimaticBuilder {
-  override def withCustomGenerators(additionalGenerators: Generator[_]*): NutrimaticBuilder = {
-    val additionalByErasure = additionalGenerators.collect { case h: ByErasure[_] => h }
-    val additionCustom = additionalGenerators.toSet -- additionalByErasure
+  override def withCustomGenerators[T <: Any](additionalGenerators: Generator[T]*): NutrimaticBuilder = {
+    val additionalByErasure: Seq[ByErasure[_]] = additionalGenerators.collect { case h: ByErasure[_] => h }
+    val additionCustom: Set[Generator[_]] = additionalGenerators.toSet -- additionalByErasure
     copy(
       byErasure = byErasure ++ additionalByErasure,
       custom = custom ++ additionCustom
