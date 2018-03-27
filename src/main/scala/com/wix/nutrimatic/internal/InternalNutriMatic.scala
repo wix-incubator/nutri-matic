@@ -21,11 +21,25 @@ import com.wix.nutrimatic.internal.generators._
 
 import scala.reflect.runtime.universe._
 
+private object GlobalLock // we need a lock because of https://github.com/scala/bug/issues/10766
+
+private[nutrimatic] case class PartialFunctionWithGlobalLock[-A, +B](inner: PartialFunction[A, B]) extends PartialFunction[A, B] {
+  override def isDefinedAt(x: A): Boolean = GlobalLock.synchronized {
+    inner.isDefinedAt(x)
+  }
+
+  override def apply(v1: A): B = GlobalLock.synchronized {
+    inner.apply(v1)
+  }
+}
+
 private[nutrimatic] class InternalNutriMatic(additionalByErasure: Seq[ByErasure[_]],
                                              additionalCustom: Seq[Generator[_]],
                                              val randomValues: RandomValues,
                                              maxSizePerCache: Int) extends NutriMatic {
 
+  private def withGlobalLocks[T](generators :Seq[Generator[T]]) = generators.map(PartialFunctionWithGlobalLock(_))
+  
   private val fail: Generator[Nothing] = {
     case (t, context: InternalContext) =>
       val basicMessage = s"Error generating an instance of ${context.root}."
@@ -41,26 +55,26 @@ private[nutrimatic] class InternalNutriMatic(additionalByErasure: Seq[ByErasure[
   private val failOnNothing = Generators.byExactType[Nothing](context => fail((typeOf[Nothing], context)))
 
   private val basicGenerators = CachingGenerator[Any](
-    generators = Seq(failOnNothing)
+    generators = withGlobalLocks(Seq(failOnNothing)
       ++ additionalCustom
       ++ Primitives.generators
-      ++ BoxedJavaPrimitives.generators,
+      ++ BoxedJavaPrimitives.generators),
     maxCacheSize = maxSizePerCache)
 
   private val erasureGenerators = CachingGenerator[Any](
-    generators = additionalByErasure
+    generators = withGlobalLocks(additionalByErasure
       ++ Monads.generators
-      ++ Collections.generators,
+      ++ Collections.generators),
     keyFromType = AssignableErasureMatchingGenerator.cacheKeyFromType,
     maxCacheSize = maxSizePerCache
   )
   private val reflectiveGenerators = CachingGenerator.fromGeneratorsOfGenerators(
-    generatorGenerators = Seq(
+    generatorGenerators = withGlobalLocks(Seq(
       Arrays,
       Enums,
       SealedTraits,
       ClassesWithConstructors
-    ),
+    )),
     maxCacheSize = maxSizePerCache)
 
   private val generatorsWithCaching = 
@@ -70,7 +84,7 @@ private[nutrimatic] class InternalNutriMatic(additionalByErasure: Seq[ByErasure[
 
   private val generatorChain = generatorsWithCaching.onlyIfCached orElse generatorsWithCaching orElse fail
 
-  override def makeA[T](implicit tag: TypeTag[T]): T = synchronized { // we need a lock because of https://github.com/scala/bug/issues/10766
+  override def makeA[T](implicit tag: TypeTag[T]): T = { 
     val tpe = tag.tpe
     val value = InternalContext(this, tpe).makeComponent(tpe)
     value.asInstanceOf[T]
