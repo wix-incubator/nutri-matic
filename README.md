@@ -4,6 +4,8 @@
 >
 > &mdash; <cite> Douglas Adams, The Hitchhiker's Guide to the Galaxy
 
+[![Build Status](https://travis-ci.org/wix-incubator/nutri-matic.svg?branch=master)](https://travis-ci.org/wix-incubator/nutri-matic)
+
 Creates arbitrary instances of scala objects using reflection. Currently supports:
 * Primitive types
 * Boxed Java primitives
