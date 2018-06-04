@@ -33,7 +33,7 @@ private[nutrimatic] object ClassesWithConstructors extends GeneratorGenerator[An
     val mirror = rootMirror
     val clazz = t.typeSymbol.asClass
     val primaryConstructor = getPrimaryConstructor(t).get
-    val ctorParams = primaryConstructor.infoIn(t).paramLists.head
+    val ctorParams = primaryConstructor.infoIn(t).paramLists.flatten
     val reflected = mirror.reflectClass(clazz).reflectConstructor(primaryConstructor)
 
     {

@@ -18,7 +18,7 @@ package com.wix.nutrimatic
 
 import com.wix.nutrimatic.NutriMatic.builder
 import com.wix.nutrimatic.NutriMatic.default.{makeA => defaultMakeA}
-import com.wix.nutrimatic.samples._
+import com.wix.nutrimatic.samples.{MultipleArgListsConstructor, _}
 import org.specs2.control.Debug
 import org.specs2.matcher.ValueCheck
 import org.specs2.mutable.SpecificationWithJUnit
@@ -225,5 +225,9 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     repeatedRuns(instance1.makeA[Int]) must_== repeatedRuns(instance2.makeA[Int])
   }
 
+  "should support multiple constructor argument lists" in new Scope {
+    defaultMakeA[MultipleArgListsConstructor] must beAnInstanceOf[MultipleArgListsConstructor]
+  }
+  
   def repeatedRuns[T](t: => T): Seq[T] = Range(0, 50).map((_) => t)
 }
