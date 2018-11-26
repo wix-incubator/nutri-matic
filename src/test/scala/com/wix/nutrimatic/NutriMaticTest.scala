@@ -229,5 +229,14 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     defaultMakeA[MultipleArgListsConstructor] must beAnInstanceOf[MultipleArgListsConstructor]
   }
   
+  "should support case objects" in new Scope {
+    defaultMakeA[CaseObject.type] must_=== defaultMakeA[CaseObject.type]
+
+    private def beEitherObjectOrInstanceOfCaseClass =
+      (_: SealedTraitWithCaseObject) must (be_==(CaseObject) or be_==(CaseClass()))
+    
+    repeatedRuns(defaultMakeA[SealedTraitWithCaseObject]) must beEitherObjectOrInstanceOfCaseClass.forall
+  }
+  
   def repeatedRuns[T](t: => T): Seq[T] = Range(0, 50).map((_) => t)
 }
