@@ -16,6 +16,7 @@ Creates arbitrary instances of scala objects using reflection. Currently support
 * Sealed traits
 * Scala enums
 * Case classes
+* Case objects
 * Classes that have a constructor
 
 ### Usage
