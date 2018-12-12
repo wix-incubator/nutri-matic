@@ -243,25 +243,30 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
 
   "should support tagged types" >> {
     "with custom generators for each" in new Scope {
+      val Douglas = "Douglas"
+      val Adams = "Adams"
+      
       val instance = NutriMatic.builder.withCustomGenerators(
-        Generators.byExactType[FirstName](_ => tags.firstName("Douglas")),
-        Generators.byExactType[LastName](_ => tags.lastName("Adams"))
+        Generators.byExactType[FirstName](_ => tags.firstName(Douglas)),
+        Generators.byExactType[LastName](_ => tags.lastName(Adams)),
+        Generators.byExactType[Age](_ => tags.age(67).right.get)
       ).build
 
       val person = instance.makeA[Person]
 
-      person.firstName must_== "Douglas"
-      person.lastName must_== "Adams"
-      person.motto must !==("Adams") and !==("Douglas")
+      person.firstName must_== Douglas
+      person.lastName must_== Adams
+      person.age must_== 67
+      person.motto must !==(Adams) and !==(Douglas)
     }
 
     "with fallback for unknown tagged types" in new Scope {
       import scala.reflect.runtime.universe._
-      private val taggedGenerator: Generator[Tagged[_, _]] = {
-        case (t: universe.Type, r: Context) if t <:< weakTypeOf[Tag[_]] =>
+      private val taggedGenerator: Generator[@@[_, _]] = {
+        case (t: universe.Type, r: Context) if t <:< weakTypeOf[Tagged[_]] =>
           // this won't work with tagged types that have generic arguments (eg List[X] with Tag[...]), as those get 
-          // erased as well. But since tagging is usually user primitives, this is a reasonable implementation
-          r.makeComponent(t.erasure).asInstanceOf[Tagged[_, _]]
+          // erased as well. But since tagging is usually used for primitives, this is a reasonable implementation
+          r.makeComponent(t.erasure).asInstanceOf[@@[_, _]]
       }
       
       val instance = NutriMatic.builder.withCustomGenerators(
@@ -273,6 +278,7 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
 
       person.firstName must_== "Douglas"
       person.lastName must beAnInstanceOf[String] and !==("Douglas")
+      person.age must be_>=(Short.MinValue) and be_<=(Short.MaxValue)
       person.motto must !==("Adams") and !==("Douglas")
     }
   }
