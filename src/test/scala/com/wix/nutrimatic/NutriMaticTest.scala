@@ -18,11 +18,14 @@ package com.wix.nutrimatic
 
 import com.wix.nutrimatic.NutriMatic.builder
 import com.wix.nutrimatic.NutriMatic.default.{makeA => defaultMakeA}
-import com.wix.nutrimatic.samples.{MultipleArgListsConstructor, _}
+import com.wix.nutrimatic.samples._
+import com.wix.nutrimatic.samples.tags._
 import org.specs2.control.Debug
 import org.specs2.matcher.ValueCheck
 import org.specs2.mutable.SpecificationWithJUnit
 import org.specs2.specification.Scope
+
+import scala.reflect.runtime.universe
 
 class NutriMaticTest extends SpecificationWithJUnit with Debug {
 
@@ -236,6 +239,42 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
       (_: SealedTraitWithCaseObject) must (be_==(CaseObject) or be_==(CaseClass()))
     
     repeatedRuns(defaultMakeA[SealedTraitWithCaseObject]) must beEitherObjectOrInstanceOfCaseClass.forall
+  }
+
+  "should support tagged types" >> {
+    "with custom generators for each" in new Scope {
+      val instance = NutriMatic.builder.withCustomGenerators(
+        Generators.byExactType[FirstName](_ => tags.firstName("Douglas")),
+        Generators.byExactType[LastName](_ => tags.lastName("Adams"))
+      ).build
+
+      val person = instance.makeA[Person]
+
+      person.firstName must_== "Douglas"
+      person.lastName must_== "Adams"
+      person.motto must !==("Adams") and !==("Douglas")
+    }
+
+    "with fallback for unknown tagged types" in new Scope {
+      import scala.reflect.runtime.universe._
+      private val taggedGenerator: Generator[Tagged[_, _]] = {
+        case (t: universe.Type, r: Context) if t <:< weakTypeOf[Tag[_]] =>
+          // this won't work with tagged types that have generic arguments (eg List[X] with Tag[...]), as those get 
+          // erased as well. But since tagging is usually user primitives, this is a reasonable implementation
+          r.makeComponent(t.erasure).asInstanceOf[Tagged[_, _]]
+      }
+      
+      val instance = NutriMatic.builder.withCustomGenerators(
+        Generators.byExactType[FirstName](_ => tags.firstName("Douglas")),
+        taggedGenerator
+      ).build
+
+      val person = instance.makeA[Person]
+
+      person.firstName must_== "Douglas"
+      person.lastName must beAnInstanceOf[String] and !==("Douglas")
+      person.motto must !==("Adams") and !==("Douglas")
+    }
   }
   
   def repeatedRuns[T](t: => T): Seq[T] = Range(0, 50).map((_) => t)
