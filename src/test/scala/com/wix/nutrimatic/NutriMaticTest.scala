@@ -99,6 +99,16 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
     }
   }
 
+  "nutri-matic java enums" should {
+    "be supported" in new Scope {
+      defaultMakeA[JavaEnum] must beOneOf(JavaEnum.values():_*)
+    }
+
+    "return all values for enums if called enough times" in new Scope {
+      repeatedRuns(defaultMakeA[JavaEnum]) must containAllOf(JavaEnum.values())
+    }
+  }
+
   "nutri-matic case classes" should {
     "beSupported" in new Scope {
       val Foo(foo, bar) = defaultMakeA[Foo]
