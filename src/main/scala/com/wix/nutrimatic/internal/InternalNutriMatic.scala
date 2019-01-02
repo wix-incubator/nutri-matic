@@ -58,6 +58,7 @@ private[nutrimatic] class InternalNutriMatic(additionalByErasure: Seq[ByErasure[
     generatorGenerators = Seq(
       Arrays,
       Enums,
+      JavaEnums,
       Objects,
       SealedTraits,
       ClassesWithConstructors
