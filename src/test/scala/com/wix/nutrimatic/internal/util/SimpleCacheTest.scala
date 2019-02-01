@@ -19,12 +19,12 @@ package com.wix.nutrimatic.internal.util
 import com.wix.nutrimatic.internal.JavaRandomRandomValues
 import org.specs2.concurrent.ExecutionEnv
 import org.specs2.matcher.Scope
-import org.specs2.mutable.Specification
+import org.specs2.mutable.SpecificationWithJUnit
 
-import scala.concurrent.{Await, Future}
 import scala.concurrent.duration._
+import scala.concurrent.{Await, Future}
 
-class SimpleCacheTest(implicit ee: ExecutionEnv) extends Specification {
+class SimpleCacheTest(implicit ee: ExecutionEnv) extends SpecificationWithJUnit {
 
   "simple cache" should {
     "find a value after you put it in" in new Context {
