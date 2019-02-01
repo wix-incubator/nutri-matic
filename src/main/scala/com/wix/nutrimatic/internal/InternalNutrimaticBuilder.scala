@@ -38,13 +38,7 @@ private[nutrimatic] case class InternalNutrimaticBuilder(byTypeEquality: Seq[ByT
 
   override def withStringLengths(from: Int, to: Int): NutrimaticBuilder =
     copy(primitiveGenerators = primitiveGenerators.copy(stringMinSize = from, stringMaxSize = to))
-
-  override def withOnlyAsciiCharacters: NutrimaticBuilder =
-    copy(primitiveGenerators = primitiveGenerators.copy(onlyAscii = true))
-
-  override def withAllCharacters: NutrimaticBuilder =
-    copy(primitiveGenerators = primitiveGenerators.copy(onlyAscii = false))
-
+  
   override def withSeed(seed: Long): NutrimaticBuilder =
     copy(primitiveGenerators = primitiveGenerators.copy(initialSeed = seed))
 

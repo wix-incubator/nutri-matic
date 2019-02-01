@@ -67,10 +67,6 @@ package object nutrimatic {
 
     def withStringLengths(from: Int, to: Int): NutrimaticBuilder
 
-    def withOnlyAsciiCharacters: NutrimaticBuilder
-
-    def withAllCharacters: NutrimaticBuilder
-
     def withSeed(seed: Long): NutrimaticBuilder
 
     def withMaxCacheSize(size: Int): NutrimaticBuilder

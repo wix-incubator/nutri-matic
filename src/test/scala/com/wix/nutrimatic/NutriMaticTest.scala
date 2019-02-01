@@ -47,11 +47,6 @@ class NutriMaticTest extends SpecificationWithJUnit with Debug {
       val instance = builder.withStringLengths(10, 12).build
       repeatedRuns(instance.makeA[String]) must contain(allOf(haveLength[String](10), haveLength[String](11), haveLength[String](12)))
     }
-
-    "support full utf mode" in new Scope {
-      val instance = builder.withAllCharacters.build
-      instance.makeA[String].replaceAll("[a-zA-Z0-9]", "") must not(beEmpty)
-    }
   }
 
   "nutri-matic primitives" should {

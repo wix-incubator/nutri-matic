@@ -33,8 +33,6 @@ Or you can configure to your hearts content:
 import com.wix.nutrimatic.NutriMatic
 
 val nutriMatic = NutriMatic.builder // the arguments here are the default values
-  .withAllCharacters // created strings will include any characters
-  .withOnlyAsciiCharacters // created strings will include only ascii letters and numbers (default)
   .withCollectionSizes(0, 3) // created collections and arrays will have a size between these numbers (inclusive)
   .withStringLengths(1, 20) // created strings will have a length between these numbers (inclusive)
   .withCustomGenerators() // use these custom generators
