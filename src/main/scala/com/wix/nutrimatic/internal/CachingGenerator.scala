@@ -16,7 +16,7 @@
 
 package com.wix.nutrimatic.internal
 
-import com.google.common.cache.{Cache, CacheBuilder}
+import com.wix.nutrimatic.internal.util.SimpleCache
 import com.wix.nutrimatic.{Generator, TypeAndContext}
 
 import scala.reflect.runtime.universe._
@@ -86,11 +86,8 @@ private class ByKeyLookupCachingGenerator[Key <: AnyRef, Value](generators: Seq[
 
 private abstract class AbstractCachingGenerator[Key <: AnyRef, Value](keyFromType: Type => Key, maxCacheSize: Int) extends CachingGenerator[Key, Value] {
 
-  val cache: Cache[Key, Generator[Value]] = CacheBuilder.newBuilder()
-    .maximumSize(maxCacheSize)
-    .recordStats()
-    .build[Key, Generator[Value]]()
-
+  val cache: SimpleCache[Key, Generator[Value]] = new SimpleCache[Key, Generator[Value]](maxCacheSize)
+  
   override def isDefinedAt(tc: TypeAndContext): Boolean = {
     hasCached(tc) || canHandle(tc)
   }
@@ -112,7 +109,7 @@ private abstract class AbstractCachingGenerator[Key <: AnyRef, Value](keyFromTyp
   }
 
   private def getCached(tc: TypeAndContext) = {
-    Option(cache.getIfPresent(keyFromType(tc._1)))
+    cache.getIfPresent(keyFromType(tc._1))
   }
 
   protected def canHandle(tc: TypeAndContext): Boolean
